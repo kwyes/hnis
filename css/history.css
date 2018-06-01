@@ -1,0 +1,109 @@
+#order_history_list tr td{
+  vertical-align: middle;
+}
+.stylish-input-group .input-group-addon{
+    background: white !important;
+}
+.stylish-input-group .form-control{
+  border-right:0;
+	box-shadow:0 0 0;
+	border-color:#ccc;
+}
+.stylish-input-group button {
+  border:0;
+  background:transparent;
+}
+.btn-sm  {
+  position: relative;
+  vertical-align: center;
+  margin: 0px;
+  height: 100x;
+  padding: 20px 20px;
+  font-size: 4px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 3px 2px rgba(0, 0, 0, 0.3);
+  background: #62b1d0;
+  border: 0;
+  border-bottom: 3px solid #9FE8EF;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -3px #9FE8EF;
+  box-shadow: inset 0 -3px #9FE8EF;
+}
+.btn-sm:active {
+  top: 2px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.btn-sm:hover {
+  background: #45E1E8;
+}
+.flex-location-container {
+  display: flex;
+  /* justify-content: flex-start; */
+}
+.flex-location-container>div {
+  margin: 5px;
+}
+.box_all{
+  background-color: #E63946;
+}
+.flex-location-container .location_box{
+  background-color: #dcddde;
+  padding-top: 40px;
+  font-size: 25px;
+  font-weight: bolder;
+  color: white;
+  width: 72px;
+  height: 72px;
+  padding-right: 30px;
+  cursor:pointer;
+}
+.flex-location-container .date_listbox{
+  width:100%;
+}
+.flex-location-container .status_listbox{
+  width:100%;
+}
+.status_listbox>h5{
+  width:100%;
+  padding-left:5px;
+  font-weight: 600;
+}
+.status_listbox ul{
+  width:100%;
+}
+.status_listbox .btn-status{
+  width:100%;
+}
+.date_listbox>h5{
+  width:100%;
+  padding-left:5px;
+  font-weight: 600;
+}
+.date_listbox ul{
+  width:100%;
+}
+.date_listbox .btn-date{
+  width:100%;
+}
+.flex-location-container .btn-status, .btn-date{
+  text-align: left;
+}
+.flex-location-container .caret{
+  float:right;
+  margin-top:8px;
+}
+.orderhistory_h4{
+  color: #808080;
+  font-weight: 600;
+  border-bottom: 1px solid #b3b3b3;
+  height: 37px;
+  margin-top: 20px;
+}
+select {
+  height: 27px !important;
+  padding: 3px 12px !important;
+  font-size: 14px !important;
+}
