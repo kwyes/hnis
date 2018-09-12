@@ -13,7 +13,7 @@
     $pw = addslashes($pw);
 
     $query = "SELECT * FROM hnis_member WHERE hnisID = '$id' and hnisPW = '$pw' and hnisVendorID != 'NULL' ";
-  	$query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+  	$query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $row_num = sqlsrv_num_rows($query_result);
 
     if($row_num > 0){
@@ -42,7 +42,7 @@
     $phone = addslashes($phone);
 
     $query = "SELECT * FROM hnis_member WHERE hnisID = '$id'";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $row_num = sqlsrv_num_rows($query_result);
 
     if($row_num > 0){
@@ -70,16 +70,16 @@
              "FROM mfProd ".
              "WHERE (replace(prodKname,' ','')  LIKE '%$searchtxt%' OR replace(prodName,' ','')  LIKE '%$searchtxt%' OR prodId LIKE '%$searchtxt%') AND useYN = 'Y' ".
              "ORDER BY prodName ASC";
-    // $query_result = sqlsrv_query($conn_bby, $query, array(), array("scrollable" => 'keyset'));
+    // $query_result = sqlsrv_query($conn_bby, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
 
     if ($AdminCompany == 'BBY') {
-      $query_result = sqlsrv_query($conn_bby, $query, array(), array("scrollable" => 'keyset'));
+      $query_result = sqlsrv_query($conn_bby, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     } elseif ($AdminCompany == 'SRY') {
-      $query_result = sqlsrv_query($conn_sry, $query, array(), array("scrollable" => 'keyset'));
+      $query_result = sqlsrv_query($conn_sry, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     } elseif ($AdminCompany == 'DT') {
-      $query_result = sqlsrv_query($conn_dt, $query, array(), array("scrollable" => 'keyset'));
+      $query_result = sqlsrv_query($conn_dt, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     } elseif ($AdminCompany == 'NV') {
-      $query_result = sqlsrv_query($conn_nv, $query, array(), array("scrollable" => 'keyset'));
+      $query_result = sqlsrv_query($conn_nv, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     }
 
 
@@ -146,26 +146,26 @@
     // $searchtxt = addslashes($searchtxt);
     // $searchtxt = str_replace(" ", "", $searchtxt);
     // $searchtxt = iconv("utf-8","euc-kr",$searchtxt);
-    $searchtxt = dconv_addslash($searchtxt);
+    $searchtxt = Br_dconv($searchtxt);
     $AdminCompany = $_SESSION['hnisCompanyName'];
     $query = "SELECT prodId, prodName, prodKname, prodUnit, prodsize, GalCode, ProdOwnCode, prodBal ".
              "FROM mfProd ".
              "WHERE (replace(prodKname,' ','')  LIKE '%$searchtxt%' OR replace(prodName,' ','')  LIKE '%$searchtxt%' OR prodId LIKE '%$searchtxt%') AND useYN = 'Y' ".
              "ORDER BY prodName ASC";
-    // $query_result = sqlsrv_query($conn_bby, $query, array(), array("scrollable" => 'keyset'));
+    // $query_result = sqlsrv_query($conn_bby, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
 
     if ($AdminCompany == 'BBY') {
-      $query_result = sqlsrv_query($conn_bby, $query, array(), array("scrollable" => 'keyset'));
+      $query_result = sqlsrv_query($conn_bby, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     } elseif ($AdminCompany == 'SRY') {
-      $query_result = sqlsrv_query($conn_sry, $query, array(), array("scrollable" => 'keyset'));
+      $query_result = sqlsrv_query($conn_sry, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     } elseif ($AdminCompany == 'DT') {
-      $query_result = sqlsrv_query($conn_dt, $query, array(), array("scrollable" => 'keyset'));
+      $query_result = sqlsrv_query($conn_dt, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     } elseif ($AdminCompany == 'NV') {
-      $query_result = sqlsrv_query($conn_nv, $query, array(), array("scrollable" => 'keyset'));
+      $query_result = sqlsrv_query($conn_nv, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     }
 
 
-
+    // echo $query;
     $row_num = sqlsrv_num_rows($query_result);
 
     if($row_num == 0){
@@ -222,17 +222,20 @@
   }
 
   function search_galcode_prodowncode($barcode){
-    global $conn_bby;
+    global $conn_dt;
     $barcode = str_replace(" ", "", $barcode);
-    $query = "SELECT prodId, prodName, prodKname, prodUnit, prodsize, GalCode, ProdOwnCode ".
+    if($barcode == ''){
+      $barcode = 'nothinghere';
+    }
+    $query = "SELECT prodId, prodName, prodKname, prodUnit, prodsize, GalCode, ProdOwnCode, prodBal ".
              "FROM mfProd ".
-             "WHERE prodId = '$barcode' AND useYN = 'Y' ".
+             "WHERE (replace(prodKname,' ','')  LIKE '%$barcode%' OR replace(prodName,' ','')  LIKE '%$barcode%' OR prodId LIKE '%$barcode%' OR CONCAT(replace(prodKname,' ',''), replace(prodName,' ','')) LIKE '%$barcode%') AND useYN = 'Y' ".
              "ORDER BY prodName ASC";
-    $query_result = sqlsrv_query($conn_bby, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_dt, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $row_num = sqlsrv_num_rows($query_result);
     $context = '<table class="table table-hover table-mfprod">';
-    $context .= '<thead><tr><th>Barcode</th><th>Name</th><th>Unit</th><th>Size</th><th>Set</th></tr></thead><tbody>';
-    if($row_num == 0){
+    $context .= '<thead><tr><th>Barcode</th><th>Name</th><th>Bal</th><th>Size</th><th>Set</th></tr></thead><tbody>';
+    if($row_num == 0) {
       echo "noitem";
     } else {
         $i = 0;
@@ -248,6 +251,7 @@
           $prodUnit2 = addslashes($prodUnit);
           $prodsize = Br_iconv($row['prodsize']);
           $prodsize2 = addslashes($prodsize);
+          $prodBalance = $row['prodBal'];
           $GalCode = $row['GalCode'];
           $ProdOwnCode = $row['ProdOwnCode'];
           // $context .= $barcode."::".$prodName."::".$prodKname."::".$prodUnit."::".$prodsize;
@@ -261,13 +265,13 @@
                           '.$prodName.'
                         </td>
                         <td>
-                          '.$prodUnit.'
+                          '.$prodBalance.'
                         </td>
                         <td>
                           '.$prodsize.'
                         </td>
                         <td>
-                          <span class="glyphicon glyphicon-book" onclick="javascript:set_textbox(\''.$GalCode.'\',\''.$ProdOwnCode.'\');">
+                          <span class="glyphicon glyphicon-book" onclick="javascript:set_textbox(\''.$barcode.'\',\''.$GalCode.'\',\''.$ProdOwnCode.'\');">
                           </span>
                         </td>
                        </tr>';
@@ -275,6 +279,7 @@
         $context .= '</tbody></table>';
         echo $context;
       }
+      // echo $query;
   }
 
   function ajax_add_item($barcode,$prodKname,$prodName,$prodUnit,$prodsize){
@@ -292,7 +297,7 @@
 
     $vendorId = $_SESSION['hnisVendorID'];
     $search_query = "SELECT Barcode FROM Hnis_Vendor_Item WHERE Barcode = '$barcode' AND VendorID = '$vendorId'";
-    $search_query_result = sqlsrv_query($conn_hannam, $search_query, array(), array("scrollable" => 'keyset'));
+    $search_query_result = sqlsrv_query($conn_hannam, $search_query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $search_num_row = sqlsrv_num_rows($search_query_result);
     if ($search_num_row > 0) {
       echo "already";
@@ -306,11 +311,10 @@
     }
   }
 
-  function delete_db_item($barcode){
+  function delete_db_item($ItemID){
     global $conn_hannam;
-
     $vendorId = $_SESSION['hnisVendorID'];
-    $delete_query = "DELETE FROM Hnis_Vendor_Item WHERE Barcode = '$barcode' AND VendorID = '$vendorId'";
+    $delete_query = "DELETE FROM Hnis_Vendor_Item WHERE ItemID = '$ItemID' AND VendorID = '$vendorId'";
     $delete_query_result = sqlsrv_query($conn_hannam, $delete_query);
   }
 
@@ -322,19 +326,42 @@
     $update_query_result = sqlsrv_query($conn_hannam, $update_query);
   }
 
-  function update_item_confirmed($vendorid,$vendorcode,$barcode,$vendorunit,$vendorcontent,$vendortype,$galcode,$prodowncode){
+  function update_item_confirmed($ItemID, $vendorid,$vendorcode,$originalbarcode,$barcode,$vendorunit,$vendorcontent,$vendortype,$galcode,$prodowncode){
     global $conn_hannam;
     $vendorcode = dconv_addslash($vendorcode);
+    $originalbarcode = dconv_addslash($originalbarcode);
+    $originalbarcode = str_replace(' ', '', $originalbarcode);
     $barcode = dconv_addslash($barcode);
+    $barcode = str_replace(' ', '', $barcode);
     $vendorunit = dconv_addslash($vendorunit);
     $vendorcontent = dconv_addslash($vendorcontent);
     $vendortype = dconv_addslash($vendortype);
     $galcode = dconv_addslash($galcode);
     $prodowncode = dconv_addslash($prodowncode);
     $registerDate = date("Y-m-d h:i:sa");
-    $update_query = "UPDATE Hnis_Vendor_Item SET chkYN = 'Y', VendorCode = '$vendorcode', VendorUnit = '$vendorunit', VendorContent = '$vendorcontent', VendorType = '$vendortype', GalCode = '$galcode', ProdOwnCode = '$prodowncode', registerDate = '$registerDate' WHERE Barcode = '$barcode' AND VendorID = '$vendorid'";
+    $update_query = "UPDATE Hnis_Vendor_Item SET chkYN = 'Y', VendorCode = '$vendorcode', VendorUnit = '$vendorunit', VendorContent = '$vendorcontent', VendorType = '$vendortype', GalCode = '$galcode', ProdOwnCode = '$prodowncode', registerDate = '$registerDate', Barcode = '$barcode' WHERE ItemID = '$ItemID' AND VendorID = '$vendorid'";
     $update_query_result = sqlsrv_query($conn_hannam, $update_query);
+    update_item_confirmed_orderdetail($ItemID, $vendorid);
     echo 'success';
+    // echo $update_query;
+  }
+
+  function update_item_confirmed_orderdetail($ItemID, $vendorid){
+    global $conn_hannam;
+    $query = "SELECT * FROM Hnis_Vendor_Item WHERE ItemID = '$ItemID'";
+    $query_result = sqlsrv_query($conn_hannam, $query);
+    $row = sqlsrv_fetch_array($query_result);
+
+    $tProd = $row['Barcode'];
+    $tProdOwnCode = $row['ProdOwnCode'];
+    $tGalcode = $row['GalCode'];
+    $prodKname = $row['ProdKname'];
+    $ProdEname = $row['ProdEname'];
+    $VendorCode = $row['VendorCode'];
+    $update_query = "UPDATE trOrderDetail SET tProd = '$tProd', tProdOwnCode = '$tProdOwnCode', tGalcode = '$tGalcode', ProdKname = '$prodKname', ProdEname = '$ProdEname' WHERE VendorCode = '$VendorCode' AND tCust = '$vendorid'";
+    $update_query_result = sqlsrv_query($conn_hannam, $update_query);
+
+    // echo $update_query;
   }
 
   function ajax_each_save_item($ajax_barcode, $ajax_code, $ajax_unit, $ajax_content, $ajax_type){
@@ -352,10 +379,10 @@
     $adminChk = $_SESSION['hnisAdminYN'];
     $context = '';
     $query = "SELECT * FROM Hnis_Vendor_Item WHERE VendorID = '$vendorId' ORDER BY chkYN desc";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 0;
-    $table_status = "U";
+    $table_status = "D";
     if($num_row == 0){
       echo "noitem";
     } else {
@@ -380,7 +407,7 @@
         $ProdKname = Br_iconv($row['ProdKname']);
         $ProdSize = Br_iconv($row['ProdSize']);
         $VendorSize = Br_iconv($row['VendorSize']);
-
+        $ItemID = $row['ItemID'];
 
         $box_selected = '';
         $ea_selected = '';
@@ -460,7 +487,7 @@
                         <input type="checkbox" name="chk[]" value="'.$i.'" />
                       </td>
                       <td>
-                        <i class="flaticon-forbidden-mark" onclick="javascript:delete_table_item(\''.$Barcode.'\', this, \''.$table_status.'\');"></i>
+                        <i class="flaticon-forbidden-mark" onclick="javascript:delete_table_item(\''.$ItemID.'\', this, \''.$table_status.'\');"></i>
                       </td>
                      </tr>';
            $i++;
@@ -469,17 +496,29 @@
     }
   }
 
-  function fetch_vendoritem_admin($vendorId){
+  function fetch_vendoritem_admin($vendorId,$loadlimit){
     global $conn_hannam;
+    // $loadlimit2 = 0;
+    $loadlimit = $loadlimit * 50;
     $adminChk = $_SESSION['hnisAdminYN'];
 
-    $query = "SELECT * FROM Hnis_Vendor_Item WHERE VendorID = '$vendorId' AND chkYN != 'I' ORDER BY chkYN asc";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query =  "WITH OrderedOrders AS ".
+                "( ".
+                    "SELECT * ".
+                	  ",ROW_NUMBER() OVER (ORDER BY VendorCode) AS 'RowNumber' ".
+                    "FROM Hnis_Vendor_Item WHERE VendorID = '$vendorId' AND chkYN != 'Y' ".
+                ") ".
+                "SELECT * ".
+                "FROM OrderedOrders ".
+                "WHERE RowNumber BETWEEN '1' AND '$loadlimit' ".
+                "ORDER BY RowNumber ASC";
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 0;
-    $table_status = "U";
+    $table_status = "D";
+    $context = '';
     if($num_row == 0){
-      echo "noitem";
+      echo 'noitem';
     } else {
       while($row = sqlsrv_fetch_array($query_result)){
 
@@ -493,6 +532,7 @@
         } else {
           $tr_class = 'danger';
         }
+        $ItemID = Br_iconv($row['ItemID']);
         $VendorCode = Br_iconv($row['VendorCode']);
         $VendorUnit = Br_iconv($row['VendorUnit']);
         $VendorContent = Br_iconv($row['VendorContent']);
@@ -502,6 +542,9 @@
         $ProdKname = Br_iconv($row['ProdKname']);
         $ProdSize = Br_iconv($row['ProdSize']);
         $VendorSize = Br_iconv($row['VendorSize']);
+
+        $GalCode = Br_iconv($row['GalCode']);
+        $ProdOwnCode = Br_iconv($row['ProdOwnCode']);
 
         $box_selected = '';
         $ea_selected = '';
@@ -540,7 +583,7 @@
           // } else {
           //   $xtag = '<span class="glyphicon glyphicon-ok vtag'.$i.'" onclick="javascript:get_row_item(\''.$i.'\', this);"></span>';
           // }
-          $xtag = '<span class="glyphicon glyphicon-ok vtag'.$i.'" onclick="javascript:get_row_item(\''.$i.'\', this);"></span>';
+          $xtag = '<span class="glyphicon glyphicon-ok vtag'.$i.'" onclick="javascript:get_row_item(\''.$i.'\');"></span>';
 
         $context .= '<tr class="'.$tr_class.'" data-id="'.$tr_class_for_css.'">
                       <td>
@@ -549,17 +592,155 @@
                           '.$VendorCode.'
                         </span>
                       </td>
-                      <td>
+                      <td class="mkitem_barcode'.$i.'" onclick="search_galcode_prodowncode('.$i.')">
+                        <input type="hidden" name="ItemID[]" class="form-control" style="" value="'.$ItemID.'">
+                        <input type="hidden" name="original_barcode[]" class="form-control" style="" value="'.$Barcode.'">
                         <input type="hidden" name="barcode[]" class="form-control" style="" value="'.$Barcode.'">
-                        <span style="cursor:pointer;" data-title="View" data-toggle="modal" data-target="#search_mfprod_div" onclick="search_galcode_prodowncode(this)">
+                        <span style="cursor:pointer;">
                           '.$Barcode.'
                         </span>
                       </td>
                       <td>
                         '.$ProdKname.'<br />
                         '.$ProdEname.'
-                        <input type="hidden" name="galcode[]" class="form-control" value="">
-                        <input type="hidden" name="prodowncode[]" class="form-control" value="">
+                        <input type="hidden" name="galcode[]" class="form-control" value="'.$GalCode.'">
+                        <input type="hidden" name="prodowncode[]" class="form-control" value="'.$ProdOwnCode.'">
+                      </td>
+                      <td>
+                        '.$VendorSize.'
+                      </td>
+                      <td>
+                        <select class="form-control" name="vendorunit[]">
+                          <option value="BOX" '.$box_selected.'>BOX</option>
+                          <option value="EA" '.$ea_selected.'>EA</option>
+                          <option value="PK" '.$pk_selected.'>PK</option>
+                          <option value="LB" '.$lb_selected.'>LB</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input type="text" name="vendorcontent[]" class="form-control" value="'.$VendorContent.'">
+                        <span style="display:none;">
+                          '.$VendorContent.'
+                        </span>
+                      </td>
+                      <td>
+                        <select class="form-control" name="vendortype[]">
+                          <option value="Refri" '.$ref_selected.'>Refri</option>
+                          <option value="Frozen" '.$fro_selected.'>Frozen</option>
+                          <option value="Dry" '.$dry_selected.'>Dry</option>
+                          <option value="etc" '.$etc_selected.'>etc</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input type="checkbox" name="chk[]" value="'.$i.'" />
+                      </td>
+                      <td>
+                        '.$xtag.'
+                      </td>
+                     </tr>';
+           $i++;
+      }
+      echo $context;
+    }
+  }
+
+  function fetch_vendoritem_search_admin($vendorId,$searchTxt){
+    global $conn_hannam;
+
+    $query =  "SELECT * FROM Hnis_Vendor_Item WHERE VendorID = '$vendorId' AND (VendorCode LIKE '%$searchTxt%' OR Barcode LIKE '%$searchTxt%' OR (replace(ProdKname,' ','')  LIKE '%$searchTxt%') OR (replace(ProdEname,' ','')  LIKE '%$searchTxt%'))";
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
+    $num_row = sqlsrv_num_rows($query_result);
+    $i = 0;
+    $table_status = "D";
+    $context = '';
+    if($num_row == 0){
+      echo 'noitem';
+    } else {
+      while($row = sqlsrv_fetch_array($query_result)){
+
+        $chkYN = $row['chkYN'];
+        $chkYN = str_replace(' ', '', $chkYN);
+
+        if($chkYN == 'Y'){
+          $tr_class = '';
+        } elseif ($chkYN == 'I') {
+          $tr_class = 'info';
+        } else {
+          $tr_class = 'danger';
+        }
+        $ItemID = Br_iconv($row['ItemID']);
+        $VendorCode = Br_iconv($row['VendorCode']);
+        $VendorUnit = Br_iconv($row['VendorUnit']);
+        $VendorContent = Br_iconv($row['VendorContent']);
+        $VendorType = Br_iconv($row['VendorType']);
+        $Barcode = Br_iconv($row['Barcode']);
+        $ProdEname = Br_iconv($row['ProdEname']);
+        $ProdKname = Br_iconv($row['ProdKname']);
+        $ProdSize = Br_iconv($row['ProdSize']);
+        $VendorSize = Br_iconv($row['VendorSize']);
+
+        $GalCode = Br_iconv($row['GalCode']);
+        $ProdOwnCode = Br_iconv($row['ProdOwnCode']);
+
+        $box_selected = '';
+        $ea_selected = '';
+        $pk_selected = '';
+        $lb_selected = '';
+
+        $ref_selected = '';
+        $fro_selected = '';
+        $dry_selected = '';
+        $etc_selected = '';
+
+
+
+        if($VendorUnit == 'BOX'){
+          $box_selected = 'selected';
+        } elseif ($VendorUnit == 'EA') {
+          $ea_selected = 'selected';
+        } elseif ($VendorUnit == 'PK') {
+          $pk_selected = 'selected';
+        } elseif ($VendorUnit == 'LB') {
+          $lb_selected = 'selected';
+        }
+
+        if($VendorType == 'Refri'){
+          $ref_selected = 'selected';
+        } elseif ($VendorType == 'Frozen') {
+          $fro_selected = 'selected';
+        } elseif ($VendorType == 'Dry') {
+          $dry_selected = 'selected';
+        } elseif ($VendorType == 'etc') {
+          $etc_selected = 'selected';
+        }
+        $tr_class_for_css = 'table-item-'.$i;
+          // if($chkYN == 'Y'){
+          //   $xtag = '';
+          // } else {
+          //   $xtag = '<span class="glyphicon glyphicon-ok vtag'.$i.'" onclick="javascript:get_row_item(\''.$i.'\', this);"></span>';
+          // }
+          $xtag = '<span class="glyphicon glyphicon-ok vtag'.$i.'" onclick="javascript:get_row_item(\''.$i.'\');"></span>';
+
+        $context .= '<tr class="'.$tr_class.'" data-id="'.$tr_class_for_css.'">
+                      <td>
+                        <input type="text" name="vendorcode[]" class="form-control" style="" value="'.$VendorCode.'">
+                        <span style="display:none;">
+                          '.$VendorCode.'
+                        </span>
+                      </td>
+                      <td class="mkitem_barcode'.$i.'" onclick="search_galcode_prodowncode('.$i.')">
+                        <input type="hidden" name="ItemID[]" class="form-control" style="" value="'.$ItemID.'">
+                        <input type="hidden" name="original_barcode[]" class="form-control" style="" value="'.$Barcode.'">
+                        <input type="hidden" name="barcode[]" class="form-control" style="" value="'.$Barcode.'">
+                        <span style="cursor:pointer;">
+                          '.$Barcode.'
+                        </span>
+                      </td>
+                      <td>
+                        '.$ProdKname.'<br />
+                        '.$ProdEname.'
+                        <input type="hidden" name="galcode[]" class="form-control" value="'.$GalCode.'">
+                        <input type="hidden" name="prodowncode[]" class="form-control" value="'.$ProdOwnCode.'">
                       </td>
                       <td>
                         '.$VendorSize.'
@@ -602,9 +783,10 @@
   function fetch_submititem_vendor(){
     global $conn_hannam;
     $query = "SELECT v.VendorID, m.hnisCompanyName, count(v.VendorID) as items FROM Hnis_Vendor_Item as v LEFT JOIN hnis_member as m on m.hnisVendorID = v.VendorID WHERE v.chkYN = 'S' GROUP BY VendorID, m.hnisCompanyName";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 0;
+    $countScroll = 1;
     $where = "'vendoritem-table-tbody'";
     if($num_row == 0){
       echo "novendor";
@@ -615,7 +797,7 @@
         $num_items = $row['items'];
         $CompanyName = iconv_stripslash($CompanyName);
 
-        $context .= '<tr style="cursor:pointer;" onclick="fetch_vendoritem_admin('.$VendorID.','.$where.')">
+        $context .= '<tr style="cursor:pointer;" onclick="fetch_vendoritem_admin('.$VendorID.','.$where.','.$countScroll.')">
                       <td width="45%">
                         '.$CompanyName.'
                       </td>
@@ -635,7 +817,7 @@
   function fetch_vendor_list(){
     global $conn_hannam;
     $query = "SELECT * FROM Hnis_Vendor_List ORDER BY VendorID ASC";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 0;
     // $where = "'vendoritem-table-tbody'";
@@ -706,7 +888,7 @@
   function fetch_vendor_detail($VendorID){
     global $conn_hannam;
     $query = "SELECT * FROM Hnis_Vendor_List WHERE VendorID = '$VendorID'";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 0;
     // $where = "'vendoritem-table-tbody'";
@@ -739,7 +921,7 @@
   // function fetch_myitem2($vendorid){
   //   global $conn_hannam;
   //   $query = "SELECT * FROM Hnis_Vendor_Item WHERE VendorID = '$vendorid' ORDER BY chkYN desc";
-  //   $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+  //   $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
   //   $num_row = sqlsrv_num_rows($query_result);
   //   $i = 1;
   //   $table_status = "U";
@@ -850,11 +1032,23 @@
   //   }
   // }
 
-  function fetch_myitem_inregister(){
+  function fetch_myitem_inregister($loadlimit){
     global $conn_hannam;
     $vendorid = $_SESSION['hnisVendorID'];
-    $query = "SELECT * FROM Hnis_Vendor_Item WHERE VendorID = '$vendorid'";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    // $query = "SELECT * FROM Hnis_Vendor_Item WHERE VendorID = '$vendorid' ORDER BY chkYN desc";
+    $loadlimit = $loadlimit * 50;
+    $query =  "WITH OrderedOrders2 AS ".
+                "( ".
+                    "SELECT * ".
+                	  ",ROW_NUMBER() OVER (ORDER BY VendorCode) AS 'RowNumber' ".
+                    "FROM Hnis_Vendor_Item WHERE VendorID = '$vendorid' ".
+                ") ".
+                "SELECT * ".
+                "FROM OrderedOrders2 ".
+                "WHERE RowNumber BETWEEN '1' AND '$loadlimit' ".
+                "ORDER BY RowNumber ASC";
+
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -918,8 +1112,8 @@
 
   function fetch_neworder_myitem($vendorid){
     global $conn_hannam;
-    $query = "SELECT VendorCode, Barcode, ProdEname, ProdKname, ProdSize, ProdUnit, VendorUnit, VendorContent, VendorSize, GalCode, ProdOwnCode FROM Hnis_Vendor_Item WHERE VendorID = '$vendorid' and chkYN = 'Y'";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query = "SELECT * FROM Hnis_Vendor_Item WHERE VendorID = '$vendorid' and chkYN = 'Y' ORDER BY VendorCode ASC";
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -960,7 +1154,8 @@
         $ProdOwnCode = $row['ProdOwnCode'];
 
 
-        $prodBalance = get_prodBalance($Barcode);
+        // $prodBalance = get_prodBalance($Barcode);
+        $prodBalance = 0;
         // <span href="#" data-toggle="neworderitem_myitem" title="'.$VendorUnit.'">'.$ProdSize.'</span><br />
 
         $context .= '<tr class="neworder_search_tr" style="cursor:pointer;"  onclick="javascript:add_table_myorder_row(\''.$VendorCode2.'\',\''.$Barcode2.'\',\''.$ProdKname2.'\',\''.$ProdEname2.'\',\''.$ProdUnit2.'\',\''.$ProdSize2.'\',\''.$VendorUnit2.'\',\''.$VendorContent2.'\',\''.$GalCode.'\',\''.$ProdOwnCode.'\');">
@@ -1009,10 +1204,17 @@
 
   function fetch_myorder_itemlist($vendorid,$ordno){
     global $conn_hannam;
-    $query = "SELECT t.VendorCode, t.tProd, t.tQty, t.tOUPrice, t.tAmt, t.ProdEname, t.ProdKname, t.tSize, t.tPunit, t.tMemo, h.VendorUnit, h.VendorContent, h.VendorSize, t.tGalcode, t.tProdOwnCode FROM
-trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.tCust = h.VendorID WHERE t.tCust = '$vendorid' and t.tOrdNo = '$ordno' ORDER BY t.tID DESC";
+    // $query = "SELECT t.tID, t.VendorCode, t.tProd, t.tQty, t.tOUPrice, t.tAmt, t.ProdEname, t.ProdKname, t.tSize, t.tPunit, t.tMemo, h.VendorUnit, h.VendorContent, h.VendorSize, t.tGalcode, t.tProdOwnCode FROM ".
+    //          "trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.tCust = h.VendorID WHERE t.tCust = '$vendorid' and t.tOrdNo = '$ordno' AND t.VendorCode = h.VendorCode ".
+    //          "group by t.tID, t.VendorCode, t.tProd, t.tQty, t.tOUPrice, t.tAmt, t.ProdEname, t.ProdKname, t.tSize, t.tPunit, t.tMemo, h.VendorUnit, h.VendorContent, h.VendorSize, t.tGalcode, t.tProdOwnCode ".
+    //          "ORDER BY t.tID DESC";
+
+    $query = "SELECT t.tID, t.VendorCode, t.tProd, t.tQty, t.tOUPrice, t.tAmt, t.ProdEname, t.ProdKname, t.tSize, t.tPunit, t.tMemo, t.tGalcode, t.tProdOwnCode FROM ".
+             "trOrderDetail as t WHERE t.tCust = '$vendorid' and t.tOrdNo = '$ordno' ".
+             "ORDER BY t.tID DESC";
+
     // echo $query;
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1029,18 +1231,27 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
         $tAmt = number_format($tAmt,2);
         $GalCode = $row['tGalcode'];
         $ProdOwnCode = $row['tProdOwnCode'];
-
+        $array = get_unit_contents_size($vendorid,$Barcode,$VendorCode);
         $ProdEname = Br_iconv($row['ProdEname']);
         $ProdKname = Br_iconv($row['ProdKname']);
-        $ProdSize = Br_iconv($row['VendorSize']);
         $ProdUnit = Br_iconv($row['tPunit']);
         $tMemo = Br_iconv($row['tMemo']);
+        // $ProdSize = Br_iconv($row['VendorSize']);
+        // $vUnit = Br_iconv($row['VendorUnit']);
+        // $vCont = Br_iconv($row['VendorContent']);
 
-        $vUnit = Br_iconv($row['VendorUnit']);
-        $vCont = Br_iconv($row['VendorContent']);
+        $ProdSize = $array[2];
+        $vUnit = $array[0];
+        $vCont = $array[1];
 
-        $context .= '<tr class="neworder_search_tr" style="cursor:pointer;">
-                      <td>
+
+        if($Barcode == '' || $GalCode == ''){
+          $trClass = 'warning';
+        } else {
+          $trClass = '';
+        }
+        $context .= '<tr class="neworder_search_tr '.$trClass.'" style="cursor:pointer;">
+                      <td>'.$i.'
                         '.$VendorCode.'
                         <input type="hidden" value="'.$VendorCode.'" class="form-control neworder_myorder_inputtxt" name="order_vendor[]">
                       </td>
@@ -1051,7 +1262,8 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
                         <input type="hidden" value="'.$ProdOwnCode.'" class="form-control neworder_myorder_inputtxt" name="order_prodowncode[]">
                       </td>
                       <td>
-                        <span href="#" data-toggle="neworderitem_myitem" title="'.$ProdKname.'">'.$ProdEname.'<input type="hidden" value="'.$ProdEname.'" class="form-control neworder_myorder_inputtxt" name="order_ename[]"><input type="hidden" value="'.$ProdKname.'" class="form-control neworder_myorder_inputtxt" name="order_kname[]">
+                        <span href="#" data-toggle="neworderitem_myitem" title="'.$ProdKname.'">'.$ProdEname.'<input type="hidden" value="'.$ProdEname.'" class="form-control neworder_myorder_inputtxt" name="order_ename[]"><input type="hidden" value="'.$ProdKname.'" class="form-control neworder_myorder_inputtxt" name="order_kname[]"><br />
+                        <span href="#" data-toggle="neworderitem_myitem" title="'.$ProdEname.'">'.$ProdKname.'</span>
                       </td>
                       <td style="text-align:center;">
                        '.$ProdSize.'
@@ -1086,11 +1298,25 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     }
   }
 
+  function get_unit_contents_size($vendorid, $barcode,$vendorcode) {
+    global $conn_hannam;
+    $query = "SELECT TOP 1 VendorUnit, VendorContent, VendorSize FROM Hnis_Vendor_Item WHERE VendorID = '$vendorid' AND Barcode = '$barcode' AND VendorCode = '$vendorcode'";
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
+    $row = sqlsrv_fetch_array($query_result);
+    $array = array($row['VendorUnit'],$row['VendorContent'],$row['VendorSize'],$query);
+
+  	if($array) {
+  		return $array;
+  	} else {
+  		return "";
+  	}
+  }
+
   function fetch_adjust_itemlist($ordno){
     global $conn_hannam;
     $query = "SELECT * FROM trAdjustDetail WHERE tAdjNo = '$ordno' ORDER BY tID DESC";
     // echo $query;
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1142,7 +1368,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
   function fetch_saved_list($vendorid){
     global $conn_hannam;
     $query = "SELECT TOP 8 *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS tDeliveryDate FROM trOrderMaster WHERE tCust = '$vendorid' and tStatus < 3 ORDER BY oDate desc";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1198,7 +1424,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
   function fetch_confirmed_list($vendorid){
     global $conn_hannam;
     $query = "SELECT TOP 8 *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS tDeliveryDate FROM trOrderMaster WHERE tCust = '$vendorid' and tStatus = '4' ORDER BY oDate desc";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1246,8 +1472,8 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     global $conn_hannam;
     $today = date("Y-m-d");
     // $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS tDeliveryDate FROM trOrderMaster WHERE tCust = '$vendorid' and tStatus < '2' ORDER BY oDate desc";
-    $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS tDeliveryDate FROM trOrderMaster WHERE tCust = '$vendorid' AND tDeliveryDate = '$today' ORDER BY tStatus desc, oDate";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS tDeliveryDate FROM trOrderMaster WHERE tCust = '$vendorid' AND tDeliveryDate >= '$today' ORDER BY tStatus desc, oDate";
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1315,9 +1541,14 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
   function fetch_received_list($adminCompany){
     global $conn_hannam;
     $adminCompany = get_Company_CID($adminCompany);
-    $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS tDeliveryDate FROM trOrderMaster WHERE CID = '$adminCompany' AND tStatus > 2 ORDER BY oDate desc";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $today = date("Y-m-d");
+    $d2 = date('Y-m-d', strtotime('-7 days'));
+
+    $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS tDeliveryDate FROM trOrderMaster WHERE CID = '$adminCompany' AND tStatus > 1 AND tStatus < 5 ORDER BY tOrdNo desc";
+    // echo $query;
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
+
     $i = 1;
     if($num_row == 0){
       echo "noitem";
@@ -1384,8 +1615,8 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
   function fetch_adjust_received_list($adminCompany){
     global $conn_hannam;
     $adminCompany = get_Company_CID($adminCompany);
-    $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate FROM trAdjustMaster WHERE CID = '$adminCompany' AND tStatus > 1 ORDER BY oDate desc";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate FROM trAdjustMaster WHERE CID = '$adminCompany' AND tStatus > 1 ORDER BY tAdjNo desc";
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1445,8 +1676,8 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
 
   function fetch_search_by_date($orderDate){
     global $conn_hannam;
-    $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS tDeliveryDate FROM trOrderMaster WHERE tDate = '$orderDate' AND tStatus = '2' ORDER BY oDate desc";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS tDeliveryDate FROM trOrderMaster WHERE tDate = '$orderDate' AND tStatus > 1 ORDER BY tOrdNo desc";
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1463,9 +1694,12 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
         } elseif($CID == '2'){
           $branch = 'sry';
           $Company = "HANNAM SUPERMARKET SURREY";
-        } else{
+        } elseif($CID == '3'){
           $branch = 'dt';
           $Company = "HANNAM SUPERMARKET DOWNTOWN";
+        } elseif($CID == '4'){
+          $branch = 'nv';
+          $Company = "HANNAM SUPERMARKET N/V";
         }
         $tOrdNo = $row['tOrdNo'];
         $tDate = $row['oDate'];
@@ -1473,9 +1707,10 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
         $tMemo = $row['tMemo'];
         $tDeliveryDate = $row['tDeliveryDate'];
         $tStatus = $row['tStatus'];
+        $tStatus_text = get_tStatus_text($tStatus);
         $tCust = $row['tCust'];
         $tCust = get_company_name($tCust);
-        $context .= '<tr class="'.$doc_field_name.' orderhistory_list_tr" style="cursor:pointer;">
+        $context .= '<tr class="orderhistory_list_tr" style="cursor:pointer;">
                       <td>
                         '.$tOrdNo.'
                         <input type="hidden" value="'.$tOrdNo.'" class="form-control">
@@ -1485,16 +1720,20 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
                         <input type="hidden" value="'.$tDate.'" class="form-control">
                       </td>
                       <td>
+                        '.$tDeliveryDate.'
+                        <input type="hidden" value="'.$tDeliveryDate.'" class="form-control">
+                      </td>
+                      <td>
                         '.$tCust.'
+                      </td>
+                      <td>
+                        '.$tStatus_text.'
                       </td>
                       <td>
                         $'.number_format($tAMT, 2).'
                       </td>
                       <td>
-                        <p style="margin:0 10px 10px;" data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs" onclick="adminOrderPage_Redirect(\''.$tOrdNo.'\', \''.$branch.'\')" ><span class="glyphicon glyphicon-pencil"></span></button></p>
-                      </td>
-                      <td>
-                        <p style="margin:0 10px 10px;" data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" onclick="send_delete_modal('.$tOrdNo.');"><span class="glyphicon glyphicon-trash"></span></button></p>
+                        <p style="margin:0 10px 10px;" data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-default btn-xs" onclick="adminOrderPage_Redirect(\''.$tOrdNo.'\', \''.$branch.'\')" ><span class="glyphicon glyphicon-search"></span></button></p>
                       </td>
                      </tr>';
            $i++;
@@ -1509,7 +1748,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     $query .= "FROM trAdjustMaster ";
     $query .= "WHERE tStatus > 2 ";
     $query .= "AND tDate = '$orderDate'";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1572,11 +1811,11 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     $query .= "CONVERT(char(10), t.tDeliveryDate, 126) AS tDeliveryDate ";
     $query .= "FROM trOrderMaster as t ";
     $query .= "LEFT JOIN hnis_member as h on h.hnisVendorID = t.tCust ";
-    $query .= "WHERE t.tStatus > 2 ";
+    $query .= "WHERE t.tStatus > 1 ";
     $query .= "AND (replace(h.hnisCompanyName,' ','')  LIKE '%$txt%' OR replace(tOrdNo,' ','')  LIKE '%$txt%' OR tAmt LIKE '%$txt%') ";
     $query .= "ORDER BY oDate desc";
 
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1609,7 +1848,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
         $tStatus_text = get_tStatus_text($tStatus);
         $tCust = $row['tCust'];
         $tCust = get_company_name($tCust);
-        $context .= '<tr class="'.$doc_field_name.' orderhistory_list_tr" style="cursor:pointer;">
+        $context .= '<tr class="orderhistory_list_tr" style="cursor:pointer;">
                       <td>
                         '.$tOrdNo.'
                         <input type="hidden" value="'.$tOrdNo.'" class="form-control">
@@ -1654,7 +1893,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     $query .= "AND replace(tAdjNo,' ','') LIKE '%$txt%' ";
     $query .= "ORDER BY oDate desc";
 
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1723,8 +1962,8 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     // echo $reg_Ename."||".$reg_Kname."||".$reg_Size."||".$reg_Upc."||".$reg_Itemcode."||".$reg_Vunit."||".$reg_Vcont."||".$reg_Vtype;
     $vendorId = $_SESSION['hnisVendorID'];
 
-    $search_query = "SELECT Barcode FROM Hnis_Vendor_Item WHERE Barcode = '$reg_Upc' AND VendorID = '$vendorId'";
-    $search_query_result = sqlsrv_query($conn_hannam, $search_query, array(), array("scrollable" => 'keyset'));
+    $search_query = "SELECT Barcode FROM Hnis_Vendor_Item WHERE Barcode = '$reg_Upc' OR VendorCode='$reg_Itemcode' AND VendorID = '$vendorId'";
+    $search_query_result = sqlsrv_query($conn_hannam, $search_query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $search_num_row = sqlsrv_num_rows($search_query_result);
     if ($search_num_row > 0) {
       echo "already";
@@ -1742,7 +1981,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
 
     if($hnislevel < 2){
       $chk_query = "SELECT tCust FROM trOrderMaster WHERE tOrdNo = '$tOrdNo' AND tCust = '$tCust'";
-      $chk_query_result = sqlsrv_query($conn_hannam, $chk_query, array(), array("scrollable" => 'keyset'));
+      $chk_query_result = sqlsrv_query($conn_hannam, $chk_query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
       $chk_num_row = sqlsrv_num_rows($chk_query_result);
       if($chk_num_row == 0){
         echo "noauthorized";
@@ -1783,20 +2022,89 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
       global $conn_nv;
     }
     if($chk == 'adjust'){
-      $fetch_query = "SELECT CID,tID,tProd,tQty FROM trAdjustDetail WHERE tAdjNo = '$tOrdNo'";
+      $fetch_query = "SELECT CID,tID,tProd,tQty,tGalcode,tProdOwnCode FROM trAdjustDetail WHERE tAdjNo = '$tOrdNo'";
     } else {
-      $fetch_query = "SELECT CID,tID,tProd,tQty FROM trOrderDetail WHERE tOrdNo = '$tOrdNo'";
+      $fetch_query = "SELECT t.tCust, CID, tID, tProd, tQty, tGalcode, tProdOwnCode, h.VendorContent, t.VendorCode FROM trOrderDetail as t ".
+                     "LEFT JOIN Hnis_Vendor_Item as h ON h.Barcode = t.tProd AND h.GalCode = t.tGalcode AND h.ProdOwnCode =  t.tProdOwnCode AND h.VendorID = t.tCust AND t.VendorCode = h.VendorCode ".
+                     "WHERE tOrdNo = '$tOrdNo' ".
+                     "group by t.tCust, CID, tID, tProd, tQty, tGalcode, tProdOwnCode, h.VendorContent, t.VendorCode ".
+                     "order by tID asc";
     }
     // echo $fetch_query;
     $fetch_query_result = sqlsrv_query($conn_hannam, $fetch_query);
     while($row = sqlsrv_fetch_array($fetch_query_result)){
       $tProd = $row['tProd'];
       $tQty = $row['tQty'];
-      $update_query = "UPDATE mfProd SET prodBal = prodBal + $tQty WHERE prodId = '$tProd'";
-      echo $update_query."<br />";
-      // sqlsrv_query($conn_bby, $update_query);
+      $tGalcode = $row['tGalcode'];
+      $tProdOwnCode = $row['tProdOwnCode'];
+      $cId = $row['CID'];
+      $tID = $row['tID'];
+      $content = $row['VendorContent'];
+      $VendorCode = $row['VendorCode'];
+      $tCust = $row['tCust'];
+      $content = str_replace(" ","",$content);
+      if($content == ''){
+        $content = 1;
+      }
+      $tGalcode = str_replace(" ", "", $tGalcode);
+      $tProdOwnCode = str_replace(" ", "", $tProdOwnCode);
+      $tProd = str_replace(" ", "", $tProd);
+
+      $tQty = $tQty * $content;
+      $today = date('Y-m-d H:i:s');
+      if($tProd !== '' && $tGalcode !== '' && $tProdOwnCode !== '') {
+        $update_query = "UPDATE dbgal.dbo.mfProd SET prodBal = prodBal + $tQty WHERE prodId = '$tProd' AND GalCode = '$tGalcode' AND ProdOwnCode = '$tProdOwnCode'";
+        $insert_query = "INSERT INTO trHnisUpdateBalance (CID,tOrdNo,tID,tDate,VendorCode,tProd,tGalCode,tProdOwnCode,Qty,tCust) ".
+                        "VALUES ('$cId', '$tOrdNo', '$tID', '$today', '$VendorCode', '$tProd', '$tGalcode', '$tProdOwnCode', '$tQty', '$tCust')";
+      }
+      // echo $update_query."\n";
+      // echo $insert_query."\n";
+      sqlsrv_query($conn_dt, $update_query);
+      sqlsrv_query($conn_hannam, $insert_query);
     }
+    $conOrder_query = "UPDATE trOrderMaster SET tStatus = '5' ".
+              "WHERE tOrdNo = '$tOrdNo' AND CID = '$cId' ";
+    sqlsrv_query($conn_hannam, $conOrder_query);
     echo 'success';
+  }
+
+  function Update_adjust_balance($tOrdNo, $chk){
+    global $conn_hannam;
+    global $conn_bby;
+    global $conn_sry;
+    global $conn_dt;
+
+    $CID = '3';
+
+    if($chk == 'adjust'){
+      $fetch_query = "SELECT CID,tID,tProd,tQty,tGalcode,tProdOwnCode FROM trAdjustDetail WHERE tAdjNo = '$tOrdNo'";
+    }
+    // echo $fetch_query;
+    $fetch_query_result = sqlsrv_query($conn_hannam, $fetch_query);
+    while($row = sqlsrv_fetch_array($fetch_query_result)){
+      $tProd = $row['tProd'];
+      $tQty = $row['tQty'];
+      $tGalcode = $row['tGalcode'];
+      $tProdOwnCode = $row['tProdOwnCode'];
+      $cId = $row['CID'];
+      $tID = $row['tID'];
+      $tQty = str_replace(" ","",$tQty);
+      $tGalcode = str_replace(" ", "", $tGalcode);
+      $tProdOwnCode = str_replace(" ", "", $tProdOwnCode);
+      $tProd = str_replace(" ", "", $tProd);
+      $today = date('Y-m-d H:i:s');
+      if($tProd !== '' && $tGalcode !== '' && $tProdOwnCode !== '') {
+        $update_query = "UPDATE dbgal.dbo.mfProd SET prodBal = prodBal + $tQty WHERE prodId = '$tProd' AND GalCode = '$tGalcode' AND ProdOwnCode = '$tProdOwnCode'";
+      }
+      // echo $update_query."\n";
+      // echo $insert_query."\n";
+      sqlsrv_query($conn_dt, $update_query);
+    }
+    $conOrder_query = "UPDATE trAdjustMaster SET tStatus = '5' ".
+              "WHERE tAdjNo = '$tOrdNo' AND CID = '$CID' ";
+    sqlsrv_query($conn_hannam, $conOrder_query);
+    echo 'success';
+    // echo $conOrder_query;
   }
 
   function Update_status_order($tOrdNo){
@@ -1819,7 +2127,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
 
     $item_detail_query = "SELECT m.tOrdNo, t.tPunit, CONVERT(char(10), m.tDate, 126) as tDate, m.tAMT, CONVERT(char(10), m.tDeliveryDate, 126) as tDeliveryDate, m.CID, t.ProdKname, t.ProdEname, t.tSize, t.tQty, t.tOUPrice, t.tAmt FROM trOrderDetail t LEFT JOIN trOrderMaster m on m.tOrdNo = t.tOrdNo";
 		$item_detail_query .= " WHERE m.tOrdNo = '$ordno' and m.tCust = '$vendorid'";
-		$item_query_result = sqlsrv_query($conn_hannam, $item_detail_query, array(), array("scrollable" => 'keyset'));
+		$item_query_result = sqlsrv_query($conn_hannam, $item_detail_query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $item_detail_num = sqlsrv_num_rows($item_query_result);
     if($item_detail_num == 0){
       echo $item_detail_query;
@@ -1849,7 +2157,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     global $conn_hannam;
     $vendorId = $_SESSION['hnisVendorID'];
     $query = "SELECT Barcode FROM Hnis_Vendor_Item WHERE VendorID = '$vendorId'";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     echo $num_row;
   }
@@ -1857,13 +2165,42 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
   function get_number_Totalamount(){
     global $conn_hannam;
     $vendorId = $_SESSION['hnisVendorID'];
-    $query = "SELECT sum(tAMT) as total FROM trOrderMaster WHERE tCust = '$vendorId' and tStatus = '5'";
+    $first_date = date("Y-m-01");
+    $last_date = date("Y-m-t");
+    $query = "SELECT sum(tAMT) as total FROM trOrderMaster WHERE tCust = '$vendorId' and tStatus > 1 AND tDate BETWEEN '$first_date' AND '$last_date'";
     $query_result = sqlsrv_query($conn_hannam, $query);
     $row = sqlsrv_fetch_array($query_result);
     $total = number_format($row['total'], 2);
 
     echo "$".$total;
   }
+
+  function get_number_credit(){
+    global $conn_hannam;
+    $vendorId = $_SESSION['hnisVendorID'];
+    $first_date = date("Y-m-01");
+    $last_date = date("Y-m-t");
+    $query = "SELECT sum(tAMT) as total FROM trOrderDetail WHERE tCust = '$vendorId' and tAmt < 0  AND tDate BETWEEN '$first_date' AND '$last_date'";
+    $query_result = sqlsrv_query($conn_hannam, $query);
+    $row = sqlsrv_fetch_array($query_result);
+    $total = number_format($row['total'], 2) * -1;
+
+    echo "$".$total;
+  }
+
+  function get_number_balance(){
+    global $conn_hannam;
+    $vendorId = $_SESSION['hnisVendorID'];
+    $first_date = date("Y-m-01");
+    $last_date = date("Y-m-t");
+    $query = "SELECT sum(tAMT) as total FROM trOrderMaster WHERE tCust = '$vendorId' and tStatus = 5 AND tDate BETWEEN '$first_date' AND '$last_date'";
+    $query_result = sqlsrv_query($conn_hannam, $query);
+    $row = sqlsrv_fetch_array($query_result);
+    $total = number_format($row['total'], 2);
+
+    echo "$".$total;
+  }
+
 
   function get_prodBalance($tProd){
     global $conn_bby;
@@ -1894,7 +2231,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     }
 
     if($deliveryDate == '1'){
-      $where_tDelDate = " AND tDeliveryDate > '$today'";
+      $where_tDelDate = " AND tDeliveryDate >= '$today'";
     } elseif ($deliveryDate == '7') {
       $oneWeekAgo = strtotime ( '-1 week' , strtotime ($today));
       $oneWeekAgo = date("Y-m-d" , $oneWeekAgo);
@@ -1913,7 +2250,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     $query = "SELECT *, CONVERT(char(10), tDate, 126) AS oDate, CONVERT(char(10), tDeliveryDate, 126) AS DeliveryDate FROM trOrderMaster ";
     $query .= "WHERE tCust = '$vendorid'$where_CID$where_status$where_tDelDate ";
     $query .= "ORDER BY DeliveryDate desc";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 1;
     if($num_row == 0){
@@ -1984,7 +2321,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     $query = "SELECT v.VendorID, m.hnisCompanyName, count(v.VendorID) as items FROM Hnis_Vendor_Item as v LEFT JOIN hnis_member as m on m.hnisVendorID = v.VendorID ";
     $query .= "WHERE (replace(v.VendorID,' ','')  LIKE '%$vendorTxt%' OR replace(m.hnisCompanyName,' ','') LIKE '%$vendorTxt%') ";
     $query .= "GROUP BY VendorID, m.hnisCompanyName";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 0;
     $where = "'vendoritem-table-tbody'";
@@ -2020,7 +2357,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     $query = "SELECT VendorID, Name, Phone FROM Hnis_Vendor_List ";
     $query .= "WHERE (replace(VendorID,' ','')  LIKE '%$vendorTxt%' OR replace(Name,' ','') LIKE '%$vendorTxt%') OR replace(Phone,' ','') LIKE '%$vendorTxt%' ";
     $query .= "ORDER BY VendorID ASC ";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 0;
     if($num_row == 0){
@@ -2055,7 +2392,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
   function fetch_hnis_member(){
     global $conn_hannam;
     $query = "SELECT * FROM hnis_member WHERE hnisAdminYN is NULL Order by hnisVendorID ASC";
-    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => 'keyset'));
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
     $num_row = sqlsrv_num_rows($query_result);
     $i = 0;
     if($num_row == 0){
@@ -2079,6 +2416,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
         $context .= '<tr class="'.$class_name.'">
                       <td>
                         '.$hnisID.'
+                        <input name="autho_hnisID" type="hidden" value="'.$hnisID.'" />
                       </td>
                       <td>
                         '.$phone.'
@@ -2090,16 +2428,133 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
                         '.$CompanyName.'
                       </td>
                       <td>
-                        <input type="text" class="form-control vendorID'.$i.'" value="'.$hnisVendorID.'">
+                        <input name="autho_vendorID" type="text" class="form-control vendorID'.$i.'" value="'.$hnisVendorID.'">
                       </td>
                       <td>
-                        <button class="btn btn-default">UPDATE</button>
+                        <button class="btn btn-default update-allocation" onclick="update_autho_vendorid(\''.$hnisID.'\', \'vendorID'.$i.'\')">UPDATE</button>
                       </td>
                      </tr>';
            $i++;
       }
       echo $context;
     }
+  }
+
+  function update_autho_vendorid($autho_hnisID, $autho_vendorID){
+    global $conn_hannam;
+    $update_query = "UPDATE hnis_member SET hnisVendorID = '$autho_vendorID' WHERE hnisID = '$autho_hnisID'";
+    $update_query_result = sqlsrv_query($conn_hannam, $update_query);
+    echo 'success';
+  }
+
+  function save_barcode($original_barcode,$register_barcode,$admin_vendor_id){
+    global $conn_hannam;
+
+    $update_query = "UPDATE Hnis_Vendor_Item SET Barcode = '$register_barcode' WHERE VendorID = '$admin_vendor_id' AND Barcode = '$original_barcode'";
+    $update_query_result = sqlsrv_query($conn_hannam, $update_query);
+    echo 'success';
+  }
+
+  function search_item_mismatching($vcode, $bcode, $qty){
+    global $conn_hannam;
+    global $conn_dt;
+    $sumtotal = '';
+    if($vcode !== ''){
+      $query = "SELECT *, CONVERT(char(10), tDate, 126) AS tDate FROM trHnisUpdateBalance WHERE VendorCode = '$vcode'";
+    }  elseif ($bcode !== '') {
+      $query = "SELECT *, CONVERT(char(10), tDate, 126) AS tDate FROM trHnisUpdateBalance WHERE tProd = '$bcode'";
+      $sumquery = "SELECT SUM(tQty) as total FROM ( SELECT tQty FROM [db1gal].[dbo].[tfTran2] where tProd = '$bcode' UNION ALL SELECT tQty FROM [db1gal].[dbo].[tfTran1] where tProd = '$bcode') q";
+      $sumquery_result = sqlsrv_query($conn_dt, $sumquery, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
+      $row2 = sqlsrv_fetch_array($sumquery_result);
+      $sumtotal = $row2['total'];
+    } else {
+      $query = "";
+    }
+    $context = '';
+    $query_result = sqlsrv_query($conn_hannam, $query, array(), array("scrollable" => SQLSRV_CURSOR_CLIENT_BUFFERED));
+    $num_row = sqlsrv_num_rows($query_result);
+    $i = 0;
+    if($num_row == 0){
+      echo 'noitem';
+    } else {
+      while($row = sqlsrv_fetch_array($query_result)){
+        $tOrdNo = $row['tOrdNo'];
+        $tID = $row['tID'];
+        $tDate = $row['tDate'];
+        $VendorCode = $row['VendorCode'];
+        $tProd = $row['tProd'];
+        $tQty = $row['Qty'];
+        $tCust = $row['tCust'];
+
+        $context .= '<tr class="">
+                      <td>
+                        '.$tOrdNo.'
+                      </td>
+                      <td>
+                        '.$tID.'
+                      </td>
+                      <td>
+                        '.$tDate.'
+                      </td>
+                      <td>
+                        '.$VendorCode.'
+                      </td>
+                      <td>
+                        '.$tProd.'
+                      </td>
+                      <td>
+                        '.$tQty.'
+                      </td>
+                      <td>
+                        '.$tCust.'
+                      </td>
+                     </tr>';
+           $i++;
+      }
+      $table_header = '<table class="table table-fixed">
+      <th>
+      ordno
+      </th>
+      <th>
+      tid
+      </th>
+      <th>
+      tdate
+      </th>
+      <th>
+      vcode
+      </th>
+      <th>
+      tProd
+      </th>
+      <th>
+      qty
+      </th>
+      <th>
+      cust
+      </th>
+      <tbody>
+      '.$context.'
+      </tbody>
+      </table>';
+      echo $table_header."<div>".$sumtotal."</div>";
+
+    }
+  }
+
+  function update_item_mismatching($vcode, $bcode, $qty){
+    global $conn_hannam;
+    if($vcode !== ''){
+      if($bcode !== '' && $qty !== ''){
+        $query = "UPDATE trHnisUpdateBalance SET tProd = '$bcode', Qty = '$qty' WHERE VendorCode = '$vcode' ";
+      } elseif ($bcode == '' && $qty !== '') {
+        $query = "UPDATE trHnisUpdateBalance SET Qty = '$qty' WHERE VendorCode = '$vcode' ";
+      } elseif ($bcode !== '' && $qty == '') {
+        $query = "UPDATE trHnisUpdateBalance SET tProd = '$bcode' WHERE VendorCode = '$vcode' ";
+      }
+    }
+    $update_query_result = sqlsrv_query($conn_hannam, $query);
+    echo $query;
   }
 
   $function = ($_GET['function']) ? $_GET['function'] : $_POST['function'];
@@ -2149,8 +2604,8 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     break;
 
     case 'delete_db_item':
-      $barcode = $_POST['barcode'];
-      delete_db_item($barcode);
+      $ItemID = $_POST['ItemID'];
+      delete_db_item($ItemID);
     break;
 
     case 'update_item_inactive':
@@ -2233,7 +2688,8 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     break;
 
     case 'fetch_myitem_inregister':
-      fetch_myitem_inregister();
+      $loadlimit = $_POST['loadlimit'];
+      fetch_myitem_inregister($loadlimit);
     break;
 
     case 'Order_delete_chk':
@@ -2287,7 +2743,8 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
 
     case 'fetch_vendoritem_admin':
       $vendorId = $_POST['vendorId'];
-      fetch_vendoritem_admin($vendorId);
+      $loadlimit = $_POST['loadlimit'];
+      fetch_vendoritem_admin($vendorId,$loadlimit);
     break;
 
     case 'search_galcode_prodowncode':
@@ -2296,8 +2753,10 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
     break;
 
     case 'update_item_confirmed':
+      $ItemID = $_POST['itemID'];
       $vendorid = $_POST['vendorid'];
       $vendorcode = $_POST['vendorcode'];
+      $originalbarcode = $_POST['originalbarcode'];
       $barcode = $_POST['barcode'];
       $vendorunit = $_POST['vendorunit'];
       $vendorcontent = $_POST['vendorcontent'];
@@ -2305,7 +2764,7 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
       $galcode = $_POST['galcode'];
       $prodowncode = $_POST['prodowncode'];
 
-      update_item_confirmed($vendorid,$vendorcode,$barcode,$vendorunit,$vendorcontent,$vendortype,$galcode,$prodowncode);
+      update_item_confirmed($ItemID,$vendorid,$vendorcode,$originalbarcode,$barcode,$vendorunit,$vendorcontent,$vendortype,$galcode,$prodowncode);
     break;
 
     case 'fetch_custom_orderhistroy_vendor':
@@ -2370,6 +2829,45 @@ trOrderDetail as t LEFT JOIN Hnis_Vendor_Item as h on h.Barcode = t.tProd AND t.
       $ordno = $_POST['ordno'];
       $chk = $_POST['chk'];
       Update_order_balance($ordno,$chk);
+    break;
+
+    case 'Update_adjust_balance':
+      $ordno = $_POST['ordno'];
+      $chk = $_POST['chk'];
+      Update_adjust_balance($ordno,$chk);
+    break;
+
+    case 'update_autho_vendorid':
+      $autho_hnisID = $_POST['autho_hnisID'];
+      $autho_vendorID = $_POST['autho_vendorID'];
+      update_autho_vendorid($autho_hnisID,$autho_vendorID);
+    break;
+
+    case 'save_barcode':
+      $original_barcode = $_POST['original_barcode'];
+      $register_barcode = $_POST['register_barcode'];
+      $admin_vendor_id = $_POST['admin_vendor_id'];
+      save_barcode($original_barcode,$register_barcode,$admin_vendor_id);
+    break;
+
+    case 'fetch_vendoritem_search_admin':
+      $vendorId = $_POST['vendorId'];
+      $searchTxt = $_POST['searchTxt'];
+      fetch_vendoritem_search_admin($vendorId, $searchTxt);
+    break;
+
+    case 'search_item_mismatching':
+      $vcode = $_POST['vcode'];
+      $bcode = $_POST['bcode'];
+      $qty = $_POST['qty'];
+      search_item_mismatching($vcode, $bcode, $qty);
+    break;
+
+    case 'update_item_mismatching':
+      $vcode = $_POST['vcode'];
+      $bcode = $_POST['bcode'];
+      $qty = $_POST['qty'];
+      update_item_mismatching($vcode, $bcode, $qty);
     break;
 
   }

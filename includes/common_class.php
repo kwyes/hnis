@@ -40,7 +40,8 @@
   	$string = str_replace($quote, $replace_quote, $string);
 
       if($string) {
-          $string = iconv('utf-8', 'euc-kr', $string);
+          // $string = iconv('utf-8', 'euc-kr', $string);
+          $string = iconv('utf-8', 'utf-8', $string);
           return $string;
       } else {
           return false;
@@ -51,7 +52,8 @@
       if($string == " ") {
           return "";
       } else if($string) {
-          $string = iconv('euc-kr', 'utf-8', $string);
+          // $string = iconv('euc-kr', 'utf-8', $string);
+          $string = iconv('utf-8', 'utf-8', $string);
           return $string;
       } else {
           return false;

@@ -2,7 +2,7 @@
 //    session_save_path("../session_temp");
     session_start();
     define("SYSTEM_PATH","..");
-    define("ABSOLUTE_PATH", "https://www.hannamsm.com/hnis");
+    define("ABSOLUTE_PATH", "https://www.test.com/hnis");
     putenv("TZ=America/Vancouver");
     $today = date("Y-m-d H:i:s");
 
