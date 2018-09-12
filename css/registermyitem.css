@@ -1,29 +1,35 @@
-.clickable{
+.clickable {
   cursor: pointer;
 }
-.panel{
+
+.panel {
   border: none;
   border-radius: 0px;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
+
 .panel-heading div {
   margin-top: -18px;
   font-size: 15px;
 }
-.panel-heading div span{
-  margin-left:5px;
+
+.panel-heading div span {
+  margin-left: 5px;
 }
-.panel-body{
+
+.panel-body {
   display: none;
 }
-.panel-title{
-  color:#3FA9F5;
-  font-weight:bolder;
+
+.panel-title {
+  color: #3FA9F5;
+  font-weight: bolder;
 }
-.panel-heading{
-  margin-left:-1px;
-  border-bottom:1px solid #b3b3b3;
+
+.panel-heading {
+  margin-left: -1px;
+  border-bottom: 1px solid #b3b3b3;
 }
 
 .controls {
@@ -119,33 +125,51 @@
   font-size: 15px;
   float: right !important;
 }
+
 .panel-right2 {
   margin-right: 19px;
   margin-top: -25px;
   font-size: 15px;
   float: right !important;
 }
-.panel-heading div span{
-  margin-left:5px;
+
+.panel-heading div span {
+  margin-left: 5px;
 }
-.panel{
+
+.panel {
   border: none;
   border-radius: 0px;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
+
 .panel-heading div {
   margin-top: -18px;
   font-size: 15px;
 }
-.panel-body{
+
+.panel-body {
   display: none;
 }
-.panel-title{
-  color:#337ab7;
-  font-weight:bolder;
+
+.panel-title {
+  color: #337ab7;
+  font-weight: bolder;
 }
-.panel-heading{
-  margin-left:-1px;
-  border-bottom:1px solid #b3b3b3;
+
+.panel-heading {
+  margin-left: -1px;
+  border-bottom: 1px solid #b3b3b3;
 }
+
+#myitem-register-tbody {
+  display: block;
+  height: 583px;
+  overflow: auto;
+}
+#myitem-register-table thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
