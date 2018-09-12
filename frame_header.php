@@ -21,8 +21,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="js/right_content.js?ver=6"></script>
-    <script src="js/common_function.js?ver=2"></script>
+    <script src="js/right_content.js?ver=7"></script>
+    <script src="js/common_function.js?ver=3"></script>
     <link href="css/left_menu.css?ver=1" rel="stylesheet">
     <link href="css/header.css?ver=5" rel="stylesheet">
     <link href="css/loader.css?ver=1" rel="stylesheet">

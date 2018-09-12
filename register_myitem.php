@@ -20,7 +20,7 @@
             </div>
             <div class="col-xs-6">
               <div class="controls">
-                <input type="text" class="floatLabel" name="reg_Size">
+                <input type="text" class="floatLabel" name="reg_Size" maxlength="10" size="10">
                 <label for="">Size</label>
               </div>
             </div>
@@ -113,12 +113,23 @@
               <th>V/Type</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="myitem-register-tbody">
           </tbody>
         </table>
         <script>
         $(document).ready(function(){
-          fetch_myitem_inregister();
+          var countScroll= 1;
+          fetch_myitem_inregister(countScroll);
+
+          // var where = 'vendoritem-table-tbody';
+          var e = document.getElementById("myitem-register-tbody");
+          e.onscroll = function(){
+            if(e.offsetHeight + e.scrollTop >= e.scrollHeight){
+              countScroll++;
+              fetch_myitem_inregister(countScroll);
+              // console.log(countScroll);
+            }
+          };
         });
         </script>
       </div>

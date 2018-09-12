@@ -97,6 +97,17 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
+  $('#vendoritem-table-filter').bind("enterKey",function(e){
+      fetch_vendoritem_search_admin();
+    });
+    $('#vendoritem-table-filter').keyup(function(e){
+      if(e.keyCode == 13) {
+        $(this).trigger("enterKey");
+      }
+  });
+});
+
+$(document).ready(function(){
   $('#admin_search_item').bind("enterKey",function(e){
       ajax_search();
     });

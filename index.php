@@ -140,6 +140,11 @@ if(!isset($_SESSION['hnisID'])) {
 					break;
 				}
 
+				case "checked" : {
+					include_once 'check.php';
+					break;
+				}
+
 			}
 			break;
 		}

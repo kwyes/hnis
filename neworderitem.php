@@ -62,8 +62,11 @@
           </tr>
           <tr height="25px;" style="background-color:#B3B3B3;color:#666666;font-weight:bold;">
             <td style="text-align:center;">Memo</td>
-            <td colspan="4">
+            <td colspan="3">
               <input type="text" class="form-control" id="main_memo" name="main_memo" value="<?=$tMemo?>" />
+            </td>
+            <td>
+              <input type="text" class="form-control" id="customerPO" name="customerPO" placeholder="CustomerPO" value="<?=$CustomerPO?>"/>
             </td>
             <td>
               <select class="form-control neworder-select-department" id="main_department" name="main_department">

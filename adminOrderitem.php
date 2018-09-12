@@ -66,8 +66,11 @@
             <input type="hidden" class="form-control" id="main_vendor" name="main_vendor" value="<?=$tCust?>" />
           </td>
           <td style="text-align:center;">Memo</td>
-          <td colspan="2">
+          <td>
             <input type="text" class="form-control" id="main_memo" name="main_memo" value="<?=$tMemo?>" />
+          </td>
+          <td>
+            <input type="text" class="form-control" id="customerPO" name="customerPO" placeholder="CustomerPO" value="<?=$CustomerPO?>" />
           </td>
           <td>
             <select class="form-control neworder-select-department" id="main_department" name="main_department">
@@ -162,10 +165,12 @@
               </div>
 
               <div class="floatright" id="neworder_complete">
-                <button type="button" name="button" onClick="proceed_submit('complete')" class="form-control">COMPLETE</button>
+                <button type="button" name="button" onClick="Update_order_balance('<?=$orderNo?>','neworder')" class="form-control">COMPLETE</button>
               </div>
             <? } else { ?>
-
+              <div class="floatright" id="neworder_print">
+                <button type="button" class="btn btn-default" onclick="print_order_form('<?=$orderNo?>')">PRINT</button>
+              </div>
             <? } ?>
               <? } else { ?>
               <div class="floatright" id="neworder_save">

@@ -42,6 +42,7 @@
           <script>
             $(document).ready(function(){
               fetch_submititem_vendor();
+
             });
           </script>
 				</div>
@@ -79,7 +80,22 @@
             <tbody id="vendoritem-table-tbody">
             </tbody>
 					</table>
-
+          <script>
+            $(document).ready(function(){
+              var countScroll= 1;
+              var where = 'vendoritem-table-tbody';
+              var e = document.getElementById("vendoritem-table-tbody");
+            	e.onscroll = function(){
+            		if(e.offsetHeight + e.scrollTop >= e.scrollHeight){
+                  var vendorId = $('#admin_vendor_id').val();
+                  countScroll++;
+                  fetch_vendoritem_admin(vendorId,where,countScroll);
+                  // alert(vendorId);
+                  // console.log(countScroll);
+            		}
+            	};
+            });
+          </script>
 				</div>
 			</div>
 		</div>

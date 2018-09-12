@@ -120,12 +120,16 @@
               <div class="floatright" id="adjust_modify">
                 <button type="button" name="button" onClick="proceed_adjust_submit('modify')" class="form-control">MODIFY</button>
               </div>
+              <? if($tStatus <= 1) { ?>
               <div class="floatright" id="adjust_submit">
                 <button type="button" name="button" onClick="proceed_adjust_submit('submit')" class="form-control">SUBMIT</button>
               </div>
+              <? } ?>
+              <? if($tStatus >= 2 && $tStatus !== 5) { ?>
               <div class="floatright" id="adjust_submit">
                 <button type="button" name="button" onClick="proceed_adjust_submit('complete')" class="form-control">COMPLETE</button>
               </div>
+              <? } ?>
               <? } else { ?>
               <div class="floatright" id="adjust_save">
                 <button type="button" name="button" onClick="proceed_adjust_submit('add')" class="form-control">SUBMIT</button>

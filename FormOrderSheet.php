@@ -7,10 +7,11 @@
   $OrdNo = $_GET['OrdNo'];
   require_once 'dompdf-master/dompdf_config.inc.php';
   include_once('includes/include_db.php');
-  $Query = "SELECT CONVERT(char(10),c.tDate,120) AS tDate, a.CID, a.tID, c.tOrdNo, tProd, tQty, a.tOUprice, a.tAmt, tPunit, a.tCust, a.ProdKname, a.ProdEname, a.tSize, CONVERT(char(10),c.tDeliveryDate,120) AS tDeliveryDate, a.tMemo AS dMemo, c.tMemo AS mMemo, c.tStatus, c.CustomerPO, c.tAMT, h.Name ".
+  $Query = "SELECT CONVERT(char(10),c.tDate,120) AS tDate, a.CID, a.tID, c.tOrdNo, tProd, tQty, a.tOUprice, a.tAmt, tPunit, a.tCust, a.ProdKname, a.ProdEname, a.tSize, CONVERT(char(10),c.tDeliveryDate,120) AS tDeliveryDate, a.tMemo AS dMemo, c.tMemo AS mMemo, c.tStatus, c.CustomerPO, c.tAMT, h.Name, i.VendorCode ".
 			 "FROM trOrderDetail a ".
 			 "LEFT JOIN trOrderMaster c ON a.tOrdNo = c.tOrdNo ".
        "LEFT JOIN Hnis_Vendor_List h ON c.tCust = h.VendorID ".
+       "LEFT JOIN Hnis_Vendor_Item i ON c.tCust = i.VendorID AND a.tProd = i.Barcode ".
 			 "WHERE a.tOrdNo = '$OrdNo' ".
 			 "ORDER BY tID ASC ";
   $query_result = sqlsrv_query($conn_hannam, $Query, array(), array("scrollable" => 'keyset'));
@@ -26,7 +27,7 @@
     $tQty = $row['tQty'];
     $tOUprice = $row['tOUprice'];
     $tOUprice = number_format($tOUprice,2);
-    $ProdKname = iconv('EUC-KR','UTF-8',$row['ProdKname']);
+    $ProdKname = $row['ProdKname'];
     $ProdEname = $row['ProdEname'];
     $tSize = $row['tSize'];
     $tDeliveryDate = $row['tDeliveryDate'];
@@ -34,16 +35,19 @@
     $mMemo = $row['mMemo'];
     $tStatus = $row['tStatus'];
     $CustomerPO = $row['CustomerPO'];
+    $VendorCode = $row['VendorCode'];
+
     $tAmt = $row['tAmt'];
     $tAmt = number_format($tAmt,2);
     $tAMT = $row['tAMT'];
     $tAMT = number_format($tAMT,2);
     $tUnit = "QTY";
     $companyname = $row['Name'];
+    $CID = $row['CID'];
     $content .= '<tr height="20" style="mso-height-source:userset;height:15.0px">'.
                   '<td height="20" class="xl95" style="height:15.0px">'.$tQty.'</td>'.
                   '<td height="20" class="xl95" style="height:15.0px">'.$tUnit.'</td>'.
-                  '<td class="xl96" style="border-left:none">'.$tProd.'</td>'.
+                  '<td class="xl96" style="border-left:none">'.$VendorCode.'</td>'.
                   '<td class="xl97" style="border-left:none">'.$tProd.'</td>'.
                   '<td colspan="2" class="xl103" style="border-left:none;">'.
                   '<span style="font-family:NanumGothic;">'.
@@ -69,6 +73,24 @@
     $header_tStatus = 'COMPLETED';
   }
 
+
+  if($CID == 1){
+    $branch = 'BURNABY';
+    $address = '4501 NORTH RD #106';
+    $subaddress = 'BURNABY, BC V3N 4R7';
+    $phone = '604-420-8856';
+  } elseif ($CID == 2) {
+    $branch = 'SURREY';
+    $address = '15357 104 AVE';
+    $subaddress = 'SURREY, BC V3R 1N5';
+    $phone = '604-580-3433';
+  } elseif ($CID == 3) {
+    $branch = 'ROBSON';
+    $address = '#202-1323 ROBSON ST';
+    $subaddress = '[VANCOUVER, BC V6E 2B1]';
+    $phone = '604-420-8856';
+  }
+
   $header = <<<EOD
 <html>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -80,7 +102,7 @@
  <tbody>
  <tr height="78" style="height:58.5px">
   <td colspan="2" height="78" width="150" align="left">
-    <img width="100%" height="100%" src="images/nologo.png">
+    <img id="currentPhoto" src="$vendor_Id.png" onerror="this.src='images/nologo.png'" width="100%" height="100%">
   </td>
   <td colspan="5" class="xl107">SALES ORDER SHEET</td>
  </tr>
@@ -132,28 +154,28 @@
  </tr>
  <tr class="xl74" height="18" style="height:14.1px">
   <td height="18" class="xl76" style="height:14.1px">&nbsp;</td>
-  <td colspan="2" class="xl69">[ROBSON]</td>
+  <td colspan="2" class="xl69">[$branch]</td>
   <td class="xl73">&nbsp;</td>
   <td colspan="2" class="xl69">&nbsp;</td>
   <td class="xl73">&nbsp;</td>
  </tr>
  <tr class="xl74" height="18" style="mso-height-source:userset;height:14.1px">
   <td height="18" class="xl73" style="height:14.1px">&nbsp;</td>
-  <td class="xl69" colspan="2" style="mso-ignore:colspan">[#202-1323 ROBSON ST]</td>
+  <td class="xl69" colspan="2" style="mso-ignore:colspan">[$address]</td>
   <td class="xl73">&nbsp;</td>
   <td colspan="2" class="xl69">&nbsp;</td>
   <td class="xl73">&nbsp;</td>
  </tr>
  <tr class="xl74" height="18" style="mso-height-source:userset;height:14.1px">
   <td height="18" class="xl73" style="height:14.1px">&nbsp;</td>
-  <td class="xl69" colspan="2" style="mso-ignore:colspan">[VANCOUVER, BC<span style="mso-spacerun:yes">&nbsp; </span>V6E 2B1]</td>
+  <td class="xl69" colspan="2" style="mso-ignore:colspan">[$subaddress]</td>
   <td class="xl69">&nbsp;</td>
   <td colspan="2" class="xl69">&nbsp;</td>
   <td class="xl73">&nbsp;</td>
  </tr>
  <tr class="xl74" height="18" style="mso-height-source:userset;height:14.1px">
   <td height="18" class="xl73" style="height:14.1px">&nbsp;</td>
-  <td class="xl69">[604-974-8188]</td>
+  <td class="xl69">[$phone]</td>
   <td class="xl69">&nbsp;</td>
   <td class="xl73">&nbsp;</td>
   <td colspan="2" class="xl69">&nbsp;</td>

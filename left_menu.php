@@ -126,6 +126,14 @@
                 </div>
               </a>
             </li>
+            <li class="collapsed">
+              <a href="?page=frame&menu=checked">
+                <i class="flaticon-stamp"></i>
+                <div class="leftmenu_text">
+                  Checked
+                </div>
+              </a>
+            </li>
           <?  }   ?>
 
           <?  } else { ?>

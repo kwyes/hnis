@@ -39,8 +39,6 @@
   $(document).ready(function(){
     get_number_vendorItem();
     get_number_Totalamount();
-    get_number_credit();
-    get_number_balance();
   });
 
 </script>
@@ -99,7 +97,7 @@
                         </div>
                         <div class="box-text">
                           Credit
-                          <span class="box-number box-credit"></span>
+                          <span class="box-number box-credit">150,000</span>
                         </div>
                       </div>
                     </div>
@@ -115,9 +113,8 @@
                     <thead>
                       <tr>
                         <th>Order Date</th>
-                        <th>Delivery Date</th>
-                        <th width="22%">Location</th>
-                        <th width="22%">Price</th>
+                        <th width="30%">Location</th>
+                        <th width="30%">Price</th>
                         <th width="50px">Edit</th>
                       </tr>
                     </thead>
@@ -139,9 +136,8 @@
                     <thead>
                       <tr>
                         <th>Order Date</th>
-                        <th>Delivery Date</th>
-                        <th width="22%">Location</th>
-                        <th width="22%">Price</th>
+                        <th width="30%">Location</th>
+                        <th width="30%">Price</th>
                         <th width="50px">View</th>
                       </tr>
                     </thead>
@@ -171,13 +167,13 @@
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">Order Detail</h4>
-
+            <button type="button-" class="btn-default" style="float:right;" onclick="print_order_form($('.orderNo').val())">Print</button>
           </div>
           <div class="modal-body">
             <div id="orderItem_Detail"></div>
           </div>
           <div class="modal-footer">
-            <button type="button-" class="btn btn-default" onclick="print_order_form($('.orderNo').val())"><i class="flaticon-print"></i></button><button type="button" class="btn btn-default" data-dismiss="modal"><i class="flaticon-forbidden-mark"></i></button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
         </div>
 

@@ -148,7 +148,8 @@
         <div id="orderItem_Detail"></div>
       </div>
       <div class="modal-footer">
-        <button type="button-" class="btn btn-default" onclick="print_order_form($('.orderNo').val())"><i class="flaticon-print"></i></button><button type="button" class="btn btn-default" data-dismiss="modal"><i class="flaticon-cross"></i></button>
+        <button type="button-" class="btn btn-default" onclick="print_order_form($('.orderNo').val())"><i class="flaticon-print"></i></button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="flaticon-forbidden-mark"></i></button>
       </div>
     </div>
 

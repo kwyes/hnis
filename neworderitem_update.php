@@ -70,7 +70,7 @@ if($mode == "submit") {
 
 	if($mode == "submit")
 	{
-		echo("<script>location.replace('https://www.hannamsm.com/hnis/?page=frame&menu=dashboard');</script>");
+		echo("<script>location.replace('https://www.hannamsm.com/hnis/?page=frame&menu=orderhistory');</script>");
 		return;
 	}
 }
@@ -140,7 +140,7 @@ for($i = 1; $i <= $item_num; $i++) {
     	}
 
     		$addOrder_query = "INSERT INTO trOrderDetail (CID, tID, tProd, tDate, tQty, tOUPrice, tAmt, tOrdNo, tCust, tTime, tPunit, tDeliveryDate, tSize, tMemo, ProdEname, ProdKname, VendorCode, tGalCode, tProdOwnCode) ".
-    						  "VALUES ('$CID', $i, '$tProd', '$tDate', ".$tQty.", ".$tOUprice.", $tAmt, '$tOrdNo', '$tCust', '$tTime', '$tUnit', '$deliveryDate','$tSize','".Br_dconv($tMemo)."', '".$ProdEname."', '".Br_dconv($ProdKname)."', '".Br_dconv($VendorCode)."', '".$tGalCode."', '".$tProdOwnCode."') ";
+    						  "VALUES ('$CID', $i, '$tProd', '$tDate', ".$tQty.", ".$tOUprice.", $tAmt, '$tOrdNo', '$tCust', '$tTime', '$tUnit', '$deliveryDate','$tSize','".Br_dconv($tMemo)."', '".Br_dconv($ProdEname)."', '".Br_dconv($ProdKname)."', '".Br_dconv($VendorCode)."', '".$tGalCode."', '".$tProdOwnCode."') ";
     		sqlsrv_query($conn_hannam,$addOrder_query);
         // echo $addOrder_query."<br />";
 		}
@@ -153,7 +153,7 @@ for($i = 1; $i <= $item_num; $i++) {
 		$tOrdNo = ($_GET['order_no']) ? $_GET['order_no'] : $_POST['order_no'];
 
 		$modOrder_query = "INSERT INTO trOrderDetail (CID, tID, tProd, tDate, tQty, tOUPrice, tAmt, tOrdNo, tCust, tTime, tPunit, tDeliveryDate, tSize, tMemo, ProdEname, ProdKname, VendorCode, tGalCode, tProdOwnCode) ".
-						  "VALUES ('$CID', $i, '$tProd', '$tDate', ".$tQty.", ".$tOUprice.", $tAmt, '$tOrdNo', '$tCust', '$tTime', '$tUnit', '$deliveryDate','$tSize','".Br_dconv($tMemo)."', '".$ProdEname."', '".Br_dconv($ProdKname)."', '".Br_dconv($VendorCode)."', '".$tGalCode."', '".$tProdOwnCode."') ";
+						  "VALUES ('$CID', $i, '$tProd', '$tDate', ".$tQty.", ".$tOUprice.", $tAmt, '$tOrdNo', '$tCust', '$tTime', '$tUnit', '$deliveryDate','$tSize','".Br_dconv($tMemo)."', '".Br_dconv($ProdEname)."', '".Br_dconv($ProdKname)."', '".Br_dconv($VendorCode)."', '".$tGalCode."', '".$tProdOwnCode."') ";
 		sqlsrv_query($conn_hannam,$modOrder_query);
 		// echo $modOrder_query."<br>";
 	}
@@ -182,7 +182,7 @@ if($mode == "add") {
 			alert('완료되었습니다.');
 			location.replace('?page=frame&menu=orderhistory');
 		</script>");
-} else {
+} elseif($mode == "modify") {
   // echo("<script>alert($CID)</script>");
 	echo("<script>location.replace('?page=frame&menu=neworderitem&branch=$branch&order_no=$tOrdNo');</script>");
 
